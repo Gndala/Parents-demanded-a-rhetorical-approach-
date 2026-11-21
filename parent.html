@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>مدرسة نهج البلاغة الأهلية - ولي الأمر</title><link rel="manifest" href="manifest-parent.json"><meta name="theme-color" content="#0b2a5b"><link rel="icon" href="logo.png">
+<style>*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#f4f1e8;color:#222}header{background:#0b2a5b;color:#fff;text-align:center;padding:10px}header img{height:90px}h1{font-size:18px;margin:4px 0;color:#f0c94a}main{max-width:720px;margin:auto;padding:10px}.card{background:#fff;border-radius:12px;padding:12px;margin:10px 0;box-shadow:0 1px 4px #0002}input,select,textarea,button{font:inherit;padding:10px;margin:4px 0;border:1px solid #ccc;border-radius:8px;max-width:100%}input,textarea,select{width:100%}button{background:#fff;cursor:pointer}.pri{background:#0b2a5b;color:#fff;border:0}.ph{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#ddd;float:right;margin-left:10px}.gr{display:flex;flex-wrap:wrap;gap:6px}.gr span{background:#f4f1e8;padding:6px;border-radius:8px;font-size:13px}.gr b{display:block;color:#0b2a5b}footer{text-align:center;font-size:12px;padding:14px;color:#666}@media print{.np{display:none!important}body{background:#fff}}</style></head><body>
+<header><img src="logo.png" alt=""><h1>مدرسة نهج البلاغة الأهلية</h1><small>بوابة ولي الأمر</small></header>
+<main>
+<div id="lg" class="card"><h3>دخول ولي الأمر</h3><input id="cd" placeholder="رمز الطالب" inputmode="numeric"><button class="pri" onclick="enter($('cd').value)">دخول</button><br><a href="#" onclick="show('rg');return false">تسجيل طالب جديد</a></div>
+<div id="rg" class="card" hidden><h3>تسجيل طالب جديد</h3>
+<input id="n" placeholder="اسم الطالب"><input id="pr" placeholder="اسم ولي الأمر"><input id="ph" placeholder="رقم الهاتف" inputmode="tel">
+<select id="gr"></select><select id="se"></select>
+<label>صورة الطالب</label><input id="pf" type="file" accept="image/*"><img id="pv" class="ph" alt="">
+<button class="pri" onclick="reg()">تسجيل</button> <button onclick="show('lg')">رجوع</button></div>
+<div id="dash" hidden></div>
+<button id="ins" class="np" hidden>📲 تثبيت التطبيق</button>
+</main><footer>تصميم وبرمجة: علي محمد دينار</footer>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const FB={apiKey:"AIzaSyB_BG0mnIJqg60jXMHwFAUti6Z5RgzWfOE",authDomain:"nahj-albalagha-school-3953a.firebaseapp.com",projectId:"nahj-albalagha-school-3953a",appId:"1:468446864487:web:2244cb6e4ef9385297a0c2"};
+const GR=['الأول','الثاني','الثالث','الرابع','الخامس','السادس'],SEC=['أ','ب','ج','د','هـ'];
+const F={m1:'الشهر الأول',m2:'الشهر الثاني',m3:'الشهر الثالث',h1:'معدل النصف الأول',mid:'نصف السنة',h2:'معدل النصف الثاني',sa:'السعي السنوي',ex:'الامتحان النهائي',fin:'الدرجة النهائية'};
+if(typeof firebase=='undefined'){document.body.innerHTML='<h3 style="padding:20px;text-align:center">⚠️ افتح الصفحة من رابط الاستضافة بمتصفح Chrome، وليس من داخل المعاينة</h3>';throw 0}
+firebase.initializeApp(FB);const db=firebase.firestore(),$=id=>document.getElementById(id);let un,img='',dp;
+$('gr').innerHTML=GR.map(x=>`<option>${x}</option>`).join('');$('se').innerHTML=SEC.map(x=>`<option>${x}</option>`).join('');
+function show(id){['lg','rg','dash'].forEach(x=>$(x).hidden=x!=id)}
+function enter(c){c=(c||'').trim();if(!c)return;db.collection('students').doc(c).get().then(d=>{if(!d.exists){localStorage.removeItem('pc');return alert('الرمز غير صحيح')}
+localStorage.pc=c;show('dash');un&&un();un=db.collection('students').doc(c).onSnapshot(s=>draw(s.data(),c))}).catch(()=>alert('تعذر الاتصال'))}
+$('pf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=200;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,200,200);img=c.toDataURL('image/jpeg',.7);$('pv').src=img};i.src=r.result};r.readAsDataURL(f)};
+async function reg(){const n=$('n').value.trim(),pr=$('pr').value.trim(),ph=$('ph').value.trim();if(!n||!pr||!ph||!img)return alert('أكمل جميع الحقول مع الصورة');
+try{let c,d;do{c=String(Math.floor(1e6+Math.random()*9e6));d=await db.collection('students').doc(c).get()}while(d.exists);
+await db.collection('students').doc(c).set({name:n,parent:pr,phone:ph,grade:$('gr').value,section:$('se').value,photo:img,g:{},b:{},abs:[],warn:[],obj:[],created:Date.now()});
+alert('رمز الدخول الخاص بك: '+c+'\nاحتفظ به جيداً');enter(c)}catch(e){alert('تعذر التسجيل')}}
+async function draw(s,c){const p=(await db.collection('pub').doc(s.grade+'-'+s.section).get()).data(),ok=p&&p.sent,g=s.g||{},L=(a,f)=>(a||[]).map(f).join('')||'<p>لا يوجد</p>';
+let h=`<div class="card"><img class="ph" src="${s.photo||''}"><b>${s.name}</b><br>الصف ${s.grade} / شعبة ${s.section}<br>ولي الأمر: ${s.parent}<br><small>رمز الطالب: ${c} — تاريخ الإصدار: ${new Date().toLocaleDateString('ar-IQ')}</small></div><div class="card"><h3>الدرجات</h3>`;
+if(!ok)h+='<p>لم تُرسل الدرجات من الإدارة بعد.</p>';else h+=Object.entries(g).map(([sb,v])=>`<h4>${sb}</h4><div class="gr">`+Object.keys(F).filter(k=>v[k]!=null&&v[k]!=='').map(k=>`<span>${F[k]}<b>${v[k]}</b></span>`).join('')+'</div>').join('')||'<p>لا توجد درجات</p>';
+h+=`</div><div class="card"><h3>السلوك</h3>${L(Object.entries(s.b||{}),([k,v])=>`<p>${k}: <b>${v}</b></p>`)}</div>
+<div class="card"><h3>الغيابات (${(s.abs||[]).length})</h3>${L(s.abs,a=>`<p>${a.d}</p>`)}</div>
+<div class="card"><h3>الإنذارات (${(s.warn||[]).length})</h3>${L(s.warn,a=>`<p>${a.d} - ${a.t||''}</p>`)}</div>
+<div class="card np"><h3>اعتراض على درس</h3><select id="os">${Object.keys(g).map(x=>`<option>${x}</option>`).join('')}</select><textarea id="ot" placeholder="نص الاعتراض"></textarea><button class="pri" onclick="obj('${c}')">إرسال الاعتراض</button>
+${(s.obj||[]).map(o=>`<p>• ${o.s}: ${o.t}<br><small>${o.r?'الرد: '+o.r:'بانتظار الرد'}</small></p>`).join('')}</div>
+<div class="np">${ok?'<button class="pri" onclick="print()">📄 سحب شهادة الدرجات (PDF)</button> ':''}<button onclick="localStorage.removeItem('pc');location.reload()">خروج</button></div>`;$('dash').innerHTML=h}
+function obj(c){const s=$('os').value,t=$('ot').value.trim();if(!s||!t)return alert('اختر المادة واكتب الاعتراض');db.collection('students').doc(c).update({obj:firebase.firestore.FieldValue.arrayUnion({s,t,r:'',d:Date.now()})}).then(()=>alert('تم إرسال اعتراضك'))}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('ins').hidden=false});$('ins').onclick=()=>dp.prompt();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+localStorage.pc?enter(localStorage.pc):show('lg');
+</script></body></html>
