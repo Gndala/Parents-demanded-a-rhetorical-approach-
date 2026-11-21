@@ -1,1 +1,1 @@
-{"name":"نهج البلاغة - إدارة المدرسة","short_name":"الإدارة","start_url":"admin.html","display":"standalone","background_color":"#0b2a5b","theme_color":"#0b2a5b","lang":"ar","dir":"rtl","icons":[{"src":"logo.png","sizes":"any","type":"image/png"}]}
+{"id": "admin-app", "name": "نهج البلاغة - إدارة المدرسة", "short_name": "إدارة المدرسة", "start_url": "admin.html", "scope": "./", "display": "standalone", "background_color": "#0b2a5b", "theme_color": "#0b2a5b", "lang": "ar", "dir": "rtl", "icons": [{"src": "logo.png", "sizes": "any", "type": "image/png"}]}

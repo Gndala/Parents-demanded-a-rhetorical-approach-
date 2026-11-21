@@ -1,0 +1,1 @@
+{"id": "teacher-app", "name": "نهج البلاغة - المدرسون", "short_name": "المدرسون", "start_url": "teacher.html", "scope": "./", "display": "standalone", "background_color": "#0b2a5b", "theme_color": "#0b2a5b", "lang": "ar", "dir": "rtl", "icons": [{"src": "logo.png", "sizes": "any", "type": "image/png"}]}
