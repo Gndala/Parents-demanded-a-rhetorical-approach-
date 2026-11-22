@@ -51,7 +51,17 @@ footer{color:#d6def0!important}
 .pop>div{background:#fff;border-radius:24px;padding:26px;text-align:center;max-width:320px;animation:pin .6s cubic-bezier(.2,1.6,.4,1);box-shadow:0 0 0 6px var(--p),0 20px 50px #000}
 @keyframes pin{from{transform:scale(.2) rotate(-20deg);opacity:0}}.pop h2{margin:6px 0;color:var(--p)}.pop .big{font-size:60px;animation:wb 1s infinite}
 .cf1{position:fixed;top:-20px;font-size:22px;z-index:98;pointer-events:none;animation:cfd linear forwards}@keyframes cfd{to{transform:translateY(110vh) rotate(720deg);opacity:.6}}
-</style></head><body>
+body{background:radial-gradient(circle at 25% 5%,#25358a,#0a0f33 60%,#04061a)!important;animation:none!important}body::before,body::after{display:none!important}
+.star{position:fixed;width:2px;height:2px;background:#fff;border-radius:50%;z-index:-1;animation:tw 3s infinite}@keyframes tw{50%{opacity:.15;transform:scale(2)}}
+.moon{position:fixed;top:16px;left:16px;width:64px;height:64px;border-radius:50%;box-shadow:inset -16px -4px 0 0 #fff4c2,0 0 34px #fff4c288;z-index:-1;animation:fl2 8s ease-in-out infinite}@keyframes fl2{50%{transform:translateY(10px)}}
+header img{height:110px!important;animation:fl 7s ease-in-out infinite,pp 4s ease-in-out infinite!important}@keyframes pp{50%{filter:drop-shadow(0 0 26px #ffd54f)}}
+main{background:#0c1347b8!important;backdrop-filter:blur(10px);padding-bottom:90px!important;border:1px solid #ffffff22}.card{color:#222}.card h3,.card h4{color:#0b2a5b}.st div{color:#223}.sh{color:#fff;text-align:center}footer{color:#c6cdf5!important}
+.msg{background:#f3efff;border-right:4px solid #6d28d9;border-radius:10px;padding:8px;margin-top:6px}
+#nv{position:fixed;bottom:0;left:0;right:0;display:flex;gap:4px;padding:6px;background:#070b2cf2;z-index:30;box-shadow:0 -6px 24px #000a}#nv button{flex:1;padding:8px 2px;font-size:12px;background:#ffffff14;color:#fff;border:0;box-shadow:none}#nv .on{background:linear-gradient(#a78bfa,#6d28d9);box-shadow:0 0 16px #8b5cf6}
+@media print{#nv,.moon,.star{display:none!important}}
+.pop{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;z-index:99}.pop>div{background:#fff;color:#222;border-radius:24px;padding:26px;text-align:center;max-width:320px;animation:pin .6s cubic-bezier(.2,1.6,.4,1);box-shadow:0 0 0 6px var(--p),0 20px 50px #000}
+@keyframes pin{from{transform:scale(.2) rotate(-20deg);opacity:0}}@keyframes wb{50%{transform:scale(1.3) rotate(-10deg)}}.pop h2{margin:6px 0;color:var(--p)}.pop .big{font-size:60px;animation:wb 1s infinite}
+</style></head><body><div class="moon"></div>
 <header><img src="logo.png" alt=""><h1>مدرسة نهج البلاغة الأهلية</h1><small>بوابة ولي الأمر</small></header>
 <main>
 <div id="lg" class="card"><h3>دخول ولي الأمر</h3><input id="cd" placeholder="رمز الطالب" inputmode="numeric"><button class="pri" onclick="enter($('cd').value)">دخول</button><br><a href="#" onclick="show('rg');return false">تسجيل طالب جديد</a></div>
@@ -62,7 +72,7 @@ footer{color:#d6def0!important}
 <button class="pri" onclick="reg()">تسجيل</button> <button onclick="show('lg')">رجوع</button></div>
 <div id="dash" hidden></div>
 <div class="inst np" id="ib">📲 ثبّت التطبيق على هاتفك<br><button id="ib2" class="pri" hidden>تثبيت الآن</button><small id="ih"></small></div>
-</main><div id="cert"></div><footer>تصميم وبرمجة: علي محمد دينار</footer>
+</main><nav id="nv" hidden><button onclick="sc(0)">🏠<br>التقرير العام</button><button onclick="sc(1)">📚<br>الدرجات والشهادة</button><button onclick="sc(2)">🗓<br>الغياب</button><button onclick="sc(3)">🎭<br>السلوكيات</button></nav><div id="cert"></div><footer>تصميم وبرمجة: علي محمد دينار</footer>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
@@ -72,9 +82,9 @@ const F={m1:'الشهر الأول',m2:'الشهر الثاني',m3:'الشهر 
 if(typeof firebase=='undefined'){document.body.innerHTML='<h3 style="padding:20px;text-align:center">⚠️ افتح الصفحة من رابط الاستضافة بمتصفح Chrome، وليس من داخل المعاينة</h3>';throw 0}
 firebase.initializeApp(FB);const db=firebase.firestore(),$=id=>document.getElementById(id);let un,img='',dp,CS;const STA=matchMedia('(display-mode: standalone)').matches;
 $('gr').innerHTML=GR.map(x=>`<option>${x}</option>`).join('');$('se').innerHTML=SEC.map(x=>`<option>${x}</option>`).join('');
-function show(id){['lg','rg','dash'].forEach(x=>$(x).hidden=x!=id);$('ib').hidden=id=='dash'||STA}
-function enter(c){c=(c||'').trim();if(!c)return;db.collection('students').doc(c).get().then(d=>{if(!d.exists){localStorage.removeItem('pc');return alert('الرمز غير صحيح')}
-localStorage.pc=c;show('dash');un&&un();un=db.collection('students').doc(c).onSnapshot(s=>draw(s.data(),c))}).catch(()=>alert('تعذر الاتصال'))}
+function show(id){['lg','rg','dash'].forEach(x=>$(x).hidden=x!=id);$('ib').hidden=id=='dash'||STA;$('nv').hidden=id!='dash'}
+function enter(c){c=(c||'').trim();if(!c)return;db.collection('students').doc(c).get().then(d=>{if(!d.exists){localStorage.removeItem('pc');return alert('الرمز غير صحيح')}if(d.data().lock)return alert('الحساب موقوف، راجع إدارة المدرسة');
+localStorage.pc=c;show('dash');un&&un();un=db.collection('students').doc(c).onSnapshot(s=>s.exists&&!s.data().lock?draw(s.data(),c):out('الحساب موقوف أو تغيّر رمزه، راجع الإدارة'))}).catch(()=>alert('تعذر الاتصال'))}
 $('pf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=200;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,200,200);img=c.toDataURL('image/jpeg',.7);$('pv').src=img};i.src=r.result};r.readAsDataURL(f)};
 async function reg(){const n=$('n').value.trim(),pr=$('pr').value.trim(),ph=$('ph').value.trim();if(!n||!pr||!ph||!img)return alert('أكمل جميع الحقول مع الصورة');
 try{let c,d;do{c=String(Math.floor(1e6+Math.random()*9e6));d=await db.collection('students').doc(c).get()}while(d.exists);
@@ -91,16 +101,20 @@ function fx(s,c,ok,a,n){const w=(s.warn||[]).length,k='fx'+c+w+(ok&&n?1:0);if(se
 if(w)pop('⚠️','#d11a1a','تنبيه: لدى ابنكم '+w+' إنذار','يرجى مراجعة قسم الإنذارات',[300,100,300]);
 else if(ok&&n)a>=50?pop(a>=90?'🏆':'🎉','#059669',a>=90?'مبارك! تفوق باهر':'مبارك النجاح','معدل ابنكم '+a.toFixed(1),[100]):pop('📉','#d11a1a','ابنكم راسب بمعدل '+a.toFixed(1),'يرجى مراجعة إدارة المدرسة',[200,100,200]);
 if(ok&&n&&a>=50)conf(a>=90?'🌟🎊⭐🏆':'🎉✨🎊')}
-async function draw(s,c){const p=(await db.collection('pub').doc(s.grade+'-'+s.section).get()).data(),ok=p&&p.sent,g=s.g||{},E=Object.entries(g).map(([k,v])=>[k,val(v),v]).filter(x=>x[1]!=null),a=avg(E),L=(x,f)=>(x||[]).map(f).join('')||'<p class="mu">لا يوجد</p>';
-let h=`<div class="hero"><img class="ph3" src="${s.photo||'logo.png'}"><div><h2>${s.name}</h2><span class="chip">الصف ${s.grade} / ${s.section}</span><br><small>ولي الأمر: ${s.parent||'-'} • الرمز ${c}</small></div></div><div class="st"><div class="${ok&&E.length?(a>=50?'pass':'fail'):''}"><b>${ok&&E.length?a.toFixed(1):'--'}</b>المعدل</div><div><b>${(s.abs||[]).length}</b>غيابات</div><div class="${(s.warn||[]).length?'red':''}"><b>${(s.warn||[]).length}</b>إنذارات</div></div><div class="card"><h3>📚 الدرجات</h3>`;
-h+=!ok?'<p class="mu">لم تُرسل الدرجات من الإدارة بعد.</p>':E.map(([k,x,v])=>{const pf=x>=50;return `<div class="${pf?'pass':'fail'}"><h4>${k} <span class="gd">${x}</span><span class="tag">${pf?(x>=90?'🏆 ممتاز':'✅ ناجح'):'❌ راسب'}</span></h4><div class="pb"><i style="width:${Math.min(100,x)}%"></i></div><div class="gr">`+Object.keys(F).filter(f=>v[f]!=null&&v[f]!=='').map(f=>`<span>${F[f]}<b class="${v[f]>=50?'p':'f'}">${v[f]}</b></span>`).join('')+'</div></div>'}).join('')||'<p class="mu">لا توجد درجات</p>';
-h+=`</div><div class="card"><h3>🎭 السلوك</h3>${L(Object.entries(s.b||{}),([k,b])=>{b=typeof b=='string'?{r:b,t:[]}:b;return `<p><b>${k}:</b> ${b.r||''} ${(b.t||[]).map(t=>`<span class="chip">${t}</span>`).join('')}</p>`})}</div>
-<div class="card"><h3>🗓 الغيابات (${(s.abs||[]).length})</h3>${L(s.abs,a=>`<span class="chip">${a.d}</span>`)}</div><div class="card"><h3>⚠️ الإنذارات (${(s.warn||[]).length})</h3>${L(s.warn,a=>`<div class="wn"><i>⚠️</i> <b>إنذار</b> — ${a.d}<br>${a.t||''}</div>`)}</div>
-<div class="card np"><h3>📝 اعتراض على درس</h3><select id="os">${Object.keys(g).map(x=>`<option>${x}</option>`).join('')}</select><textarea id="ot" placeholder="نص الاعتراض"></textarea><button class="pri" onclick="obj('${c}')">إرسال الاعتراض</button>${(s.obj||[]).map(o=>`<p>• ${o.s}: ${o.t}<br><small>${o.r?'الرد: '+o.r:'بانتظار الرد'}</small></p>`).join('')}</div>
-<div class="np">${ok?'<button class="pri" onclick="pc()">🏆 سحب الشهادة (PDF)</button> ':''}<button onclick="localStorage.removeItem('pc');location.reload()">خروج</button></div>`;CS=s;$('dash').innerHTML=h;fx(s,c,ok,a,E.length)}
+let SI=0;function sc(i){SI=i;document.querySelectorAll('#dash>section').forEach((x,j)=>x.hidden=j!=i);document.querySelectorAll('#nv button').forEach((x,j)=>x.classList.toggle('on',j==i));scrollTo(0,0)}
+function out(m){m&&alert(m);localStorage.removeItem('pc');location.reload()}
+async function draw(s,c){const[p,cf]=await Promise.all([db.collection('pub').doc(s.grade+'-'+s.section).get(),db.collection('pub').doc('_cfg').get()]),ok=p.exists&&p.data().sent,off=cf.exists&&cf.data().objOff,g=s.g||{},E=Object.entries(g).map(([k,v])=>[k,val(v),v]).filter(x=>x[1]!=null),a=avg(E),w=(s.warn||[]).length,L=(x,f)=>(x||[]).map(f).join('')||'<p class="mu">لا يوجد</p>',S=x=>`<section hidden>${x}</section>`;
+const G=!ok?'<p class="mu">لم تُرسل الدرجات من الإدارة بعد.</p>':E.map(([k,x,v])=>{const pf=x>=50;return `<div class="${pf?'pass':'fail'}"><h4>${k} <span class="gd">${x}</span><span class="tag">${pf?(x>=90?'🏆 ممتاز':'✅ ناجح'):'❌ راسب'}</span></h4><div class="pb"><i style="width:${Math.min(100,x)}%"></i></div><div class="gr">`+Object.keys(F).filter(f=>v[f]!=null&&v[f]!=='').map(f=>`<span>${F[f]}<b class="${v[f]>=50?'p':'f'}">${v[f]}</b></span>`).join('')+'</div></div>'}).join('')||'<p class="mu">لا توجد درجات</p>';
+const B=L(Object.entries(s.b||{}),([k,b])=>{b=typeof b=='string'?{r:b,t:[]}:b;return `<div class="card"><b>${k}</b> ${b.r?`<span class="chip">${b.r}</span>`:''}<br>${(b.t||[]).map(t=>`<span class="chip">${t}</span>`).join('')}${b.m?`<div class="msg">💬 ${b.m}</div>`:''}</div>`});
+$('dash').innerHTML=S(`<div class="hero"><img class="ph3" src="${s.photo||'logo.png'}"><div><h2>${s.name}</h2><span class="chip">الصف ${s.grade} / ${s.section}</span><br><small>ولي الأمر: ${s.parent||'-'} • الرمز ${c}</small></div></div><div class="st"><div class="${ok&&E.length?(a>=50?'pass':'fail'):''}"><b>${ok&&E.length?a.toFixed(1):'--'}</b>المعدل</div><div><b>${(s.abs||[]).length}</b>غيابات</div><div class="${w?'red':''}"><b>${w}</b>إنذارات</div></div><div class="np"><button onclick="out()">🚪 خروج</button></div>`)
++S(`<div class="card"><h3>📚 الدرجات</h3>${G}</div>${ok&&E.length?'<div class="np"><button class="pri" onclick="pc()">🏆 سحب الشهادة (PDF)</button></div>':''}${off||!ok?'':`<div class="card np"><h3>📝 اعتراض على درس</h3><select id="os">${Object.keys(g).map(x=>`<option>${x}</option>`).join('')}</select><textarea id="ot" placeholder="نص الاعتراض"></textarea><button class="pri" onclick="obj('${c}')">إرسال الاعتراض</button>${(s.obj||[]).map(o=>`<p>• ${o.s}: ${o.t}<br><small>${o.r?'الرد: '+o.r:'بانتظار الرد'}</small></p>`).join('')}</div>`}`)
++S(`<div class="card"><h3>🗓 الغيابات (${(s.abs||[]).length})</h3>${L(s.abs,a=>`<span class="chip">${a.d}</span>`)}</div><div class="card"><h3>⚠️ الإنذارات (${w})</h3>${L(s.warn,a=>`<div class="wn"><i>⚠️</i> <b>إنذار</b> — ${a.d}<br>${a.t||''}</div>`)}</div>`)
++S(`<h3 class="sh">🎭 السلوكيات</h3>${B}`);sc(SI);CS=s;fx(s,c,ok,a,E.length)}
 function obj(c){const s=$('os').value,t=$('ot').value.trim();if(!s||!t)return alert('اختر المادة واكتب الاعتراض');db.collection('students').doc(c).update({obj:firebase.firestore.FieldValue.arrayUnion({s,t,r:'',d:Date.now()})}).then(()=>alert('تم إرسال اعتراضك'))}
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('ib2').hidden=false;$('ih').hidden=true});$('ib2').onclick=()=>dp.prompt();
 $('ih').innerHTML=/iphone|ipad/i.test(navigator.userAgent)?'آيفون: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»':'من قائمة المتصفح ⋮ اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»';
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+for(let i=0;i<60;i++){const e=document.createElement('i');e.className='star';e.style.cssText=`top:${Math.random()*100}vh;left:${Math.random()*100}vw;animation-delay:${Math.random()*3}s`;document.body.appendChild(e)}
+db.collection('pub').doc('_notice').onSnapshot(d=>{const n=d.data();if(!n||n.to=='teachers'||localStorage.nid_p==n.id)return;localStorage.nid_p=n.id;pop('🔔','#6d28d9',n.title,n.text,[200])});
 localStorage.pc?enter(localStorage.pc):show('lg');
 </script></body></html>
