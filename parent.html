@@ -65,7 +65,7 @@ main{background:#0c1347b8!important;backdrop-filter:blur(10px);padding-bottom:90
 </style></head><body><div class="moon"></div>
 <header><img src="logo.png" alt=""><h1>مدرسة نهج البلاغة الأهلية</h1><small>بوابة ولي الأمر</small></header>
 <main>
-<div id="lg" class="card"><h3>دخول ولي الأمر</h3><input id="cd" placeholder="رمز الطالب" inputmode="numeric"><button class="pri" onclick="enter($('cd').value)">دخول</button><br><a href="#" onclick="show('rg');return false">تسجيل طالب جديد</a></div>
+<div id="lg" class="card"><h3>دخول ولي الأمر</h3><input id="cd" placeholder="رمز الطالب" inputmode="numeric"><button class="pri" onclick="enter($('cd').value)">دخول</button><br><a id="rl" href="#" onclick="show('rg');return false">تسجيل ولي أمر جديد</a><p id="rm" class="mu" hidden>تسجيل أولياء الأمور مقفل حالياً، راجع إدارة المدرسة</p></div>
 <div id="rg" class="card" hidden><h3>تسجيل ولي الأمر</h3><p>اختر صف ابنك وشعبته لتظهر الأسماء</p><select id="gr"></select><select id="se"></select><button class="pri" onclick="lst()">عرض أسماء الطلاب</button><div id="nl"></div><button onclick="nw()">ابني غير موجود بالقائمة</button>
 <div id="cf" hidden><h4 id="cn"></h4><input id="n" placeholder="اسم الطالب الكامل" hidden><input id="pr" placeholder="اسم ولي الأمر"><input id="ph" placeholder="رقم الهاتف" inputmode="tel"><label>صورة الطالب</label><input id="pf" type="file" accept="image/*"><img id="pv" class="ph" alt=""><button class="pri" onclick="cfm()">✅ تأكيد وتسجيل</button></div><button onclick="show('lg')">رجوع</button></div>
 <div id="dash" hidden></div>
@@ -89,7 +89,7 @@ async function lst(){CL=null;$('cf').hidden=true;try{const q=await db.collection
 $('nl').innerHTML=LS.length?LS.map((x,i)=>`<button class="nm" onclick="pk(${i})"></button>`).join(''):'<p class="mu">لا توجد أسماء متاحة بهذه الشعبة، أو سُجّلت كلها.</p>';document.querySelectorAll('.nm').forEach((b,i)=>b.textContent=LS[i].name)}catch(e){$('nl').innerHTML='<p>تعذر تحميل الأسماء</p>'}}
 function pk(i){CL=LS[i].id;$('cn').innerHTML='هل هذا ابنك؟ <span class="chip" id="cnm"></span>';$('cnm').textContent=LS[i].name;$('n').hidden=true;$('cf').hidden=false}
 function nw(){CL=null;$('cn').textContent='تسجيل طالب جديد';$('n').hidden=false;$('cf').hidden=false}
-async function cfm(){const pr=$('pr').value.trim(),ph=$('ph').value.trim();if(!CL)return reg();if(!pr||!ph||!img)return alert('أكمل اسم ولي الأمر والهاتف والصورة');
+async function cfm(){if(RC.regP)return alert('التسجيل مقفل حالياً');const pr=$('pr').value.trim(),ph=$('ph').value.trim();if(!CL)return reg();if(!pr||!ph||!img)return alert('أكمل اسم ولي الأمر والهاتف والصورة');
 try{await db.collection('students').doc(CL).update({parent:pr,phone:ph,photo:img,claim:false});alert('رمز الدخول الخاص بك: '+CL+'\nاحتفظ به جيداً');enter(CL)}catch(e){alert('تعذر التسجيل، ربما سُجّل الطالب مسبقاً')}}
 async function reg(){const n=$('n').value.trim(),pr=$('pr').value.trim(),ph=$('ph').value.trim();if(!n||!pr||!ph||!img)return alert('أكمل جميع الحقول مع الصورة');
 try{let c,d;do{c=String(Math.floor(1e6+Math.random()*9e6));d=await db.collection('students').doc(c).get()}while(d.exists);
@@ -121,5 +121,6 @@ $('ih').innerHTML=/iphone|ipad/i.test(navigator.userAgent)?'آيفون: اضغط
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 for(let i=0;i<60;i++){const e=document.createElement('i');e.className='star';e.style.cssText=`top:${Math.random()*100}vh;left:${Math.random()*100}vw;animation-delay:${Math.random()*3}s`;document.body.appendChild(e)}
 db.collection('pub').doc('_notice').onSnapshot(d=>{const n=d.data();if(!n||n.to=='teachers'||localStorage.nid_p==n.id)return;localStorage.nid_p=n.id;pop('🔔','#6d28d9',n.title,n.text,[200])});
+let RC={};db.collection('pub').doc('_cfg').onSnapshot(d=>{RC=d.data()||{};$('rl').hidden=!!RC.regP;$('rm').hidden=!RC.regP});
 localStorage.pc?enter(localStorage.pc):show('lg');
 </script></body></html>
